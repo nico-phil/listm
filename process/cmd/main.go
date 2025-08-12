@@ -1,13 +1,21 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
+	"github.com/nico-phil/process/db"
 	"github.com/nico-phil/process/orchestrator"
 )
 
 func main() {
-	fmt.Println("Hello from process")
+
+	err := db.NewClient()
+	if err != nil {
+		return
+	}
+
+	log.Printf("successfully connected to db")
+
 	orchestrator := orchestrator.New()
 	orchestrator.Start()
 }
