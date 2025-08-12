@@ -5,13 +5,14 @@ import (
 	"time"
 
 	"github.com/gocql/gocql"
+	"github.com/nico-phil/process/config"
 )
 
 var session *gocql.Session
 
 func NewClient() error {
-	contactPoints := []string{}
-	keypsace := ""
+	contactPoints := config.GetContactPoints()
+	keypsace := config.GetKeyspace()
 
 	cluster := gocql.NewCluster(contactPoints...)
 	cluster.Keyspace = keypsace
