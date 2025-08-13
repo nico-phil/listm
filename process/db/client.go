@@ -17,10 +17,6 @@ var session *gocql.Session
 
 func NewClient() error {
 
-	if session != nil {
-		return nil
-	}
-
 	contactPoints := config.GetContactPoints()
 	keypsace := config.GetKeyspace()
 
