@@ -18,7 +18,7 @@ func GetContactPoints() []string {
 func GetKeyspace() string {
 	keypsace := os.Getenv("CASSANDRA_KEYSPACE")
 	if keypsace == "" {
-		return "listm"
+		return "pluralistmanagement"
 	}
 
 	return keypsace
