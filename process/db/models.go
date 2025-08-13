@@ -18,8 +18,8 @@ type Campaign struct {
 
 type List struct {
 	Listnumber  string
-	WorkspaceiD string
 	CampaignID  string
+	WorkspaceID string
 	ListName    string
 	Active      bool
 	CreatedAt   *time.Time

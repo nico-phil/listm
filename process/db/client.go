@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	ErrNoconnection = errors.New("no database connection ")
+	ErrNoConnection = errors.New("no database connection ")
 )
 
 var session *gocql.Session

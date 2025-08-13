@@ -1,8 +1,10 @@
 package db
 
+import "context"
+
 func GetCampaigns() ([]Campaign, error) {
 	if session == nil {
-		return []Campaign{}, ErrNoconnection
+		return []Campaign{}, ErrNoConnection
 	}
 	query := `SELECT id, workspace_id, name, description, active, max_rate_per_min, dial_start_hour, dial_end_hour, dial_days, createdat, modifiedat FROM campaigns`
 
@@ -40,4 +42,37 @@ func GetCampaigns() ([]Campaign, error) {
 	return campaigns, nil
 }
 
-// func GetLists() {}
+func GetLists() ([]List, error) {
+	if session == nil {
+		return []List{}, ErrNoConnection
+	}
+
+	query := "SELECT listnumber, campaignid, workspace_id, listname, active, createdat, updatedat FROM lists"
+	scanner := session.Query(query).WithContext(context.Background()).Iter().Scanner()
+
+	lists := []List{}
+	for scanner.Next() {
+		var list List
+		err := scanner.Scan(
+			&list.Listnumber,
+			&list.CampaignID,
+			&list.WorkspaceID,
+			&list.ListName,
+			&list.Active,
+			&list.CreatedAt,
+			&list.UpdatedAt,
+		)
+
+		if err != nil {
+			return []List{}, err
+		}
+
+		lists = append(lists, list)
+	}
+
+	if err := scanner.Err(); err != nil {
+		return []List{}, err
+	}
+
+	return lists, nil
+}
