@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"log"
 	"time"
 
@@ -8,9 +9,18 @@ import (
 	"github.com/nico-phil/process/config"
 )
 
+var (
+	ErrNoconnection = errors.New("no database connection ")
+)
+
 var session *gocql.Session
 
 func NewClient() error {
+
+	if session != nil {
+		return nil
+	}
+
 	contactPoints := config.GetContactPoints()
 	keypsace := config.GetKeyspace()
 

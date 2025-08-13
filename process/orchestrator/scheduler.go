@@ -1,7 +1,5 @@
 package orchestrator
 
-import "fmt"
-
 type Orchestrator struct{}
 
 func New() *Orchestrator {
@@ -9,5 +7,12 @@ func New() *Orchestrator {
 }
 
 func (o *Orchestrator) Start() {
-	fmt.Println("orchestrator start")
+	processAllWorkspace()
+}
+
+func processAllWorkspace() error {
+	// get capaigns or each worksapce
+	// get active list for each compaign
+	// get leads for each list
+	return nil
 }
