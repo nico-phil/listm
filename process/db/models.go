@@ -17,7 +17,27 @@ type Campaign struct {
 }
 
 type List struct {
+	Listnumber  string
+	WorkspaceiD string
+	CampaignID  string
+	ListName    string
+	Active      bool
+	CreatedAt   *time.Time
+	UpdatedAt   *time.Time
 }
 
 type ListData struct {
+	LeadID       string
+	WorkspaceID  string
+	ListNumber   string
+	Firstname    string
+	Lastname     string
+	PhoneNumber  string
+	ZipCode      string
+	Extradata    any
+	CallCount    int
+	CallStatus   string
+	Dialable     bool
+	InsertedAt   *time.Time
+	LastCallDate *time.Time
 }

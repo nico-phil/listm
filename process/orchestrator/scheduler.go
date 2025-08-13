@@ -36,7 +36,7 @@ func processAllWorkspace() error {
 		}
 	}
 
-	fmt.Printf("activeCampaigns: %d", len(activeCampaigns))
+	fmt.Printf("activeCampaigns: %+v", activeCampaigns)
 
 	return nil
 }

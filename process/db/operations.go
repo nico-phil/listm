@@ -39,3 +39,5 @@ func GetCampaigns() ([]Campaign, error) {
 
 	return campaigns, nil
 }
+
+// func GetLists() {}
