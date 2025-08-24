@@ -31,6 +31,7 @@ func NewClient() error {
 		log.Printf("failed to connect to cassandra %v", err)
 		return err
 	}
+	log.Printf("successfully connected to db")
 	return nil
 }
 
