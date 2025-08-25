@@ -1,7 +1,7 @@
 package orchestrator
 
 import (
-	"fmt"
+	"context"
 	"log"
 
 	"github.com/nico-phil/process/db"
@@ -15,28 +15,46 @@ func New() *Orchestrator {
 
 func (o *Orchestrator) Start() {
 	log.Printf("starting orchestrator")
-	processAllWorkspace()
+	processAllWorkspacesWithContext(context.Background())
+	// this function will get 5 min of data in the database and put it in redis
 }
 
-func processAllWorkspace() error {
+func processAllWorkspacesWithContext(ctx context.Context) error {
 	// get capaigns or each worksapce
 	// get active list for each compaign
 	// get leads for each list
 	campaigns, err := db.GetCampaigns()
 	if err != nil {
-		log.Printf("error getting db campaigns %v", err)
+		log.Printf("failed to get campaign from db %v", err)
 		return err
 	}
 
-	activeCampaigns := []db.Campaign{}
+	workspaces := map[string][]db.Campaign{}
 
 	for _, c := range campaigns {
 		if c.Active {
-			activeCampaigns = append(activeCampaigns, c)
+			workspaces[c.WorkspaceID] = append(workspaces[c.WorkspaceID], c)
 		}
 	}
 
-	fmt.Printf("activeCampaigns: %+v", activeCampaigns)
+	totalWorkspaces := len(workspaces)
+	processedWorkspaces := 0
 
+	for workspaceID, campaign := range workspaces {
+		err := processWorkspaceWithContext(ctx, workspaceID, campaign)
+		if err != nil {
+			log.Printf("failed to process workspace %s: %v", workspaceID, err)
+			continue
+		}
+
+		log.Printf("successfully process workspace %s", workspaceID)
+
+		processedWorkspaces++
+	}
+	log.Printf("processed %d/%d workspaces succesfully", processedWorkspaces, totalWorkspaces)
+	return nil
+}
+
+func processWorkspaceWithContext(ctx context.Context, worksapceID string, campaign []db.Campaign) error {
 	return nil
 }
