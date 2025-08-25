@@ -70,7 +70,11 @@ func processWorkspaceWithContext(ctx context.Context, worksapceID string, campai
 
 	for _, campaign := range activeCampgaignWithSchedule {
 		// process the campaign for the worskspace
-		fmt.Println(campaign)
+		injected, err := processCampaignWithContext(ctx, campaign)
+		if err != nil {
+
+		}
+		fmt.Println(injected)
 
 	}
 	return nil
@@ -91,6 +95,12 @@ func getActiveCampignsWithSchedule(worksapceID string, campaigns []db.Campaign) 
 	}
 
 	return campaignsWithSchedule
+}
+
+func processCampaignWithContext(ctx context.Context, campaign db.Campaign) (int, error) {
+	log.Printf("processing campaign %s", campaign.ID)
+
+	return 0, nil
 }
 
 func contains(currentWeekDay time.Weekday, days []int) bool {
