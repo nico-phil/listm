@@ -1,7 +1,6 @@
 package ratelimit
 
-type RateController struct {
-}
+type RateController struct{}
 
 func NewRateController() *RateController {
 	return &RateController{}
