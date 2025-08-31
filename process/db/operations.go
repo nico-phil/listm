@@ -76,3 +76,9 @@ func GetLists() ([]List, error) {
 
 	return lists, nil
 }
+
+func GetActiveListByCampaing(campaignID string) ([]List, error) {
+	// query := `SELECT * from lists WHERE campaign_id=? && workspace_id=? && active = true ALLOW FILTERING`
+
+	return nil, nil
+}
