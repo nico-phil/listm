@@ -1,6 +1,9 @@
 package db
 
-import "context"
+import (
+	"context"
+	"fmt"
+)
 
 func GetCampaigns() ([]Campaign, error) {
 	if session == nil {
@@ -54,7 +57,7 @@ func GetLists() ([]List, error) {
 	for scanner.Next() {
 		var list List
 		err := scanner.Scan(
-			&list.Listnumber,
+			&list.ListNumber,
 			&list.CampaignID,
 			&list.WorkspaceID,
 			&list.ListName,
@@ -64,21 +67,48 @@ func GetLists() ([]List, error) {
 		)
 
 		if err != nil {
-			return []List{}, err
+			return nil, err
 		}
 
 		lists = append(lists, list)
 	}
 
 	if err := scanner.Err(); err != nil {
-		return []List{}, err
+		return nil, err
 	}
 
 	return lists, nil
 }
 
-func GetActiveListByCampaing(campaignID string) ([]List, error) {
-	// query := `SELECT * from lists WHERE campaign_id=? && workspace_id=? && active = true ALLOW FILTERING`
+func GetActiveListByCampaign(ctx context.Context, campaignID string) ([]List, error) {
+	if session == nil {
+		return nil, ErrNoConnection
+	}
+	query := `SELECT listnumber, listname, workspace_id, campaignid, active, createdat, updatedat from lists where campaignid=? AND active=true ALLOW FILTERING`
 
-	return nil, nil
+	var lists []List
+	scanner := session.Query(query, campaignID).WithContext(ctx).Iter().Scanner()
+	for scanner.Next() {
+		var list List
+		err := scanner.Scan(
+			&list.ListNumber,
+			&list.ListName,
+			&list.WorkspaceID,
+			&list.CampaignID,
+			&list.Active,
+			&list.CreatedAt,
+			&list.UpdatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("db: failed to get lists for campaign: %s : %w", campaignID, err)
+		}
+
+		lists = append(lists, list)
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("db: failed to close iterator: %s : %w", campaignID, err)
+	}
+
+	return lists, nil
 }
