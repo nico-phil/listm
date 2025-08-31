@@ -17,13 +17,13 @@ type Campaign struct {
 }
 
 type List struct {
-	Listnumber  string
-	CampaignID  string
-	WorkspaceID string
-	ListName    string
-	Active      bool
-	CreatedAt   *time.Time
-	UpdatedAt   *time.Time
+	ListNumber  string     `cql:"listnumber"`
+	CampaignID  string     `cql:"campaignid"`
+	WorkspaceID string     `cql:"workspace_id"`
+	ListName    string     `cql:"listname"`
+	Active      bool       `cql:"active"`
+	CreatedAt   *time.Time `cql:"createdat"`
+	UpdatedAt   *time.Time `cql:"updatedat"`
 }
 
 type ListData struct {

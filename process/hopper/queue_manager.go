@@ -96,16 +96,16 @@ func (qm *QueueManager) ProcessCampaignWithContext(ctx context.Context, campaign
 	log.Printf("processing campaign %s", campaign.ID)
 
 	// get all list for this spcecific campaign
-	lists, err := db.GetActiveListByCampaing(campaign.ID)
+	lists, err := db.GetActiveListByCampaign(ctx, campaign.ID)
 	if err != nil {
-		log.Printf("failed get lists for: %s with error: %v", err)
-		return 0, fmt.Errorf("failed get lists for: %s with error: %v", err)
+		log.Printf("failed get lists for campaign: %s with error: %v", campaign.ID, err)
+		return 0, fmt.Errorf("failed get lists for campaign: %s with error: %v", campaign.ID, err)
 	}
 
 	activeLists := make(map[string]db.List)
 	for _, list := range lists {
 		if list.Active {
-			activeLists[list.Listnumber] = list
+			activeLists[list.ListNumber] = list
 		}
 	}
 	return 0, nil

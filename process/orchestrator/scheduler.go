@@ -7,16 +7,17 @@ import (
 	"github.com/nico-phil/process/hopper"
 )
 
-type Orchestrator struct {
+// ProcessOrchestrator manages the main process scheduling and coordination
+type ProcessOrchestrator struct {
 	queueManager *hopper.QueueManager
 }
 
-func New() *Orchestrator {
-	return &Orchestrator{}
+func New() *ProcessOrchestrator {
+	return &ProcessOrchestrator{}
 }
 
-func (o *Orchestrator) Start() {
+func (po *ProcessOrchestrator) Start() {
 	log.Printf("starting orchestrator")
-	o.queueManager.ProcessAllWorkspacesWithContext(context.Background())
+	po.queueManager.ProcessAllWorkspacesWithContext(context.Background())
 	// this function will get 5 min of data in the database and put it in redis
 }
