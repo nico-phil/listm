@@ -9,6 +9,7 @@ import (
 	"github.com/nico-phil/process/db"
 )
 
+// QueueManager manages the I/O to the queue system
 type QueueManager struct {
 }
 
@@ -94,6 +95,19 @@ func (qm *QueueManager) GetActiveCampignsWithSchedule(worksapceID string, campai
 func (qm *QueueManager) ProcessCampaignWithContext(ctx context.Context, campaign db.Campaign) (int, error) {
 	log.Printf("processing campaign %s", campaign.ID)
 
+	// get all list for this spcecific campaign
+	lists, err := db.GetActiveListByCampaing(campaign.ID)
+	if err != nil {
+		log.Printf("failed get lists for: %s with error: %v", err)
+		return 0, fmt.Errorf("failed get lists for: %s with error: %v", err)
+	}
+
+	activeLists := make(map[string]db.List)
+	for _, list := range lists {
+		if list.Active {
+			activeLists[list.Listnumber] = list
+		}
+	}
 	return 0, nil
 }
 
