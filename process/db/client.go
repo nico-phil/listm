@@ -15,6 +15,7 @@ var (
 
 var session *gocql.Session
 
+// NewClient created a new cassandra connection
 func NewClient() error {
 
 	contactPoints := config.GetContactPoints()

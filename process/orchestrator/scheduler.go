@@ -12,10 +12,12 @@ type ProcessOrchestrator struct {
 	queueManager *hopper.QueueManager
 }
 
+// New create a process orchestrator
 func New() *ProcessOrchestrator {
 	return &ProcessOrchestrator{}
 }
 
+// Start starts orchestration process
 func (po *ProcessOrchestrator) Start() {
 	log.Printf("starting orchestrator")
 	po.queueManager.ProcessAllWorkspacesWithContext(context.Background())

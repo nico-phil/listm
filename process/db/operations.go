@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// GetCampaigns retrive all campaign from the database
 func GetCampaigns() ([]Campaign, error) {
 	if session == nil {
 		return []Campaign{}, ErrNoConnection
@@ -45,6 +46,7 @@ func GetCampaigns() ([]Campaign, error) {
 	return campaigns, nil
 }
 
+// GetLists retrive all lists fro the database
 func GetLists() ([]List, error) {
 	if session == nil {
 		return []List{}, ErrNoConnection
@@ -80,6 +82,7 @@ func GetLists() ([]List, error) {
 	return lists, nil
 }
 
+// GetActiveListByCampaign retrives all active lists for a spcecific campaign from the database
 func GetActiveListByCampaign(ctx context.Context, campaignID string) ([]List, error) {
 	if session == nil {
 		return nil, ErrNoConnection
