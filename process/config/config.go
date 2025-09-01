@@ -23,3 +23,16 @@ func GetKeyspace() string {
 
 	return keypsace
 }
+
+func GetRedisArr() string {
+	addr := os.Getenv("REDIS_ADDR")
+	if addr == "" {
+		return "localhost:6379"
+	}
+
+	return addr
+}
+
+func GetRedisPasswrod() string {
+	return os.Getenv("REDIS_ADDR")
+}
