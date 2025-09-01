@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strconv"
@@ -15,6 +16,22 @@ var (
 	rdb *redis.Client = nil
 	ctx               = context.Background()
 )
+
+// QueuedLead represents a lead in the queue - moved here to avoid circular imports
+type QueuedLead struct {
+	LeadID       string            `json:"lead_id"`
+	ListNumber   string            `json:"list_number"`
+	WorkspaceID  string            `json:"workspace_id"`
+	CampaignID   string            `json:"campaign_id"`
+	PhoneNumber  string            `json:"phone_number"`
+	FirstName    string            `json:"first_name"`
+	LastName     string            `json:"last_name"`
+	ZipCode      string            `json:"zip_code"`
+	ExtraData    map[string]string `json:"extra_data"`
+	QueuedAt     time.Time         `json:"queued_at"`
+	CallAttempts int               `json:"call_attempts"`
+	CallStatus   string            `json:"call_status"`
+}
 
 // InitRedis initiate the redis client
 func InitRedis() error {
@@ -146,4 +163,37 @@ func GetCachedCampaignRate(campaignID string) (int, error) {
 	}
 
 	return rate, nil
+}
+
+// QueueLead inserts lead for a workspace
+func QueueLead(workspaceID string, lead QueuedLead) error {
+	key := fmt.Sprintf("ws_%s", workspaceID)
+
+	jsonLead, err := json.Marshal(lead)
+	if err != nil {
+		fmt.Errorf("failed to marshal lead %v", err)
+	}
+	_, err = rdb.LPush(ctx, key, jsonLead).Result()
+	if err != nil {
+		return fmt.Errorf("failed to queue lead for workspace: %s : %v", workspaceID, err)
+	}
+
+	return nil
+}
+
+func DequeueLead(workspaceID string) (*QueuedLead, error) {
+	key := fmt.Sprintf("ws_%s", workspaceID)
+	leadJson, err := rdb.RPop(ctx, key).Result()
+	if err != nil {
+		return nil, fmt.Errorf("failed to dequeue lead for workspace %s, %v", workspaceID, err)
+	}
+
+	var lead QueuedLead
+	err = json.Unmarshal([]byte(leadJson), &lead)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarsha lead: %v", err)
+	}
+
+	return &lead, nil
+
 }
