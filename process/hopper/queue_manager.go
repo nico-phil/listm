@@ -9,17 +9,17 @@ import (
 	"github.com/nico-phil/process/db"
 )
 
-// QueueManager manages the I/O to the queue system
+// QueueManager manages the hopper  queue system
 type QueueManager struct {
 }
 
+// NewQueueManager created a new queue manager
 func NewQueueManager() *QueueManager {
 	return &QueueManager{}
 }
+
+// ProcessAllWorkspacesWithContext process all worspaces
 func (qm *QueueManager) ProcessAllWorkspacesWithContext(ctx context.Context) error {
-	// get capaigns or each worksapce
-	// get active list for each compaign
-	// get leads for each list
 	campaigns, err := db.GetCampaigns()
 	if err != nil {
 		log.Printf("failed to get campaign from db %v", err)
@@ -52,13 +52,15 @@ func (qm *QueueManager) ProcessAllWorkspacesWithContext(ctx context.Context) err
 	return nil
 }
 
+// ProcessWorkspaceWithContext processes  a single workspace with context
 func (qm *QueueManager) ProcessWorkspaceWithContext(ctx context.Context, worksapceID string, campaigns []db.Campaign) error {
 
 	activeCampgaignWithSchedule := qm.GetActiveCampignsWithSchedule(worksapceID, campaigns)
-	fmt.Printf("activeCampgaignWithSchedule for %s %v\n", worksapceID, activeCampgaignWithSchedule)
+	log.Printf("activeCampgaignWithSchedule for %s %v\n", worksapceID, activeCampgaignWithSchedule)
 
 	if len(activeCampgaignWithSchedule) == 0 {
 		log.Printf("no active campaign found for workspace %s", worksapceID)
+		return nil
 	}
 
 	log.Printf("found %d active campaigns for %s", len(activeCampgaignWithSchedule), worksapceID)
@@ -75,6 +77,7 @@ func (qm *QueueManager) ProcessWorkspaceWithContext(ctx context.Context, worksap
 	return nil
 }
 
+// GetActiveCampignsWithSchedule retreives active campaign that are ready to process
 func (qm *QueueManager) GetActiveCampignsWithSchedule(worksapceID string, campaigns []db.Campaign) []db.Campaign {
 
 	campaignsWithSchedule := []db.Campaign{}
@@ -92,6 +95,7 @@ func (qm *QueueManager) GetActiveCampignsWithSchedule(worksapceID string, campai
 	return campaignsWithSchedule
 }
 
+// ProcessCampaignWithContext processes a single campaign with context
 func (qm *QueueManager) ProcessCampaignWithContext(ctx context.Context, campaign db.Campaign) (int, error) {
 	log.Printf("processing campaign %s", campaign.ID)
 
@@ -99,15 +103,79 @@ func (qm *QueueManager) ProcessCampaignWithContext(ctx context.Context, campaign
 	lists, err := db.GetActiveListByCampaign(ctx, campaign.ID)
 	if err != nil {
 		log.Printf("failed get lists for campaign: %s with error: %v", campaign.ID, err)
-		return 0, fmt.Errorf("failed get lists for campaign: %s with error: %v", campaign.ID, err)
+		return 0, fmt.Errorf("failed to get lists for campaign: %s with error: %v", campaign.ID, err)
 	}
 
-	activeLists := make(map[string]db.List)
+	if len(lists) == 0 {
+		log.Printf("No active lists found for campaign %s", campaign.ID)
+		return 0, nil
+	}
+
+	leadsCount, err := db.GetLeadsCount(ctx, campaign.WorkspaceID)
+	if err != nil {
+		log.Printf("error")
+	}
+	fmt.Println("leadsCount:", leadsCount)
+
+	totalLeadsAvailable := 0
+
 	for _, list := range lists {
-		if list.Active {
-			activeLists[list.ListNumber] = list
+		count, ok := leadsCount[list.ListNumber]
+		if ok {
+			totalLeadsAvailable += count
 		}
 	}
+
+	if totalLeadsAvailable == 0 {
+		log.Printf("No dialable lead available for campaign %s", campaign.ID)
+		return 0, nil
+	}
+
+	//inject lead proportionally across lists
+	totalInjected := 0
+	remainingToInject := 300
+	for _, list := range lists {
+		if remainingToInject <= 0 {
+			break
+		}
+
+		listLeadCount, ok := leadsCount[list.ListNumber]
+		if !ok || listLeadCount == 0 {
+			continue
+		}
+
+		// Calculate proportional share for this list
+		proportion := float64(listLeadCount) / float64(totalLeadsAvailable)
+		listInjectCount := int(300 * proportion)
+
+		// Ensure we don't exceed remaining capacity
+		if listInjectCount > remainingToInject {
+			listInjectCount = remainingToInject
+		}
+
+		// Ensure minimum of 1 if there are leads and capacity
+		if listInjectCount < 1 && listLeadCount > 0 && remainingToInject > 0 {
+			listInjectCount = 1
+		}
+
+		if listInjectCount > 0 {
+			// injectleadfrom list
+			injected, err := qm.InjectLeadsFromList(campaign, list, listInjectCount)
+			if err != nil {
+				log.Printf("failed to inject leads from list %s", list.ListNumber)
+				continue
+			}
+
+			totalInjected += injected
+			remainingToInject += injected
+		}
+	}
+
+	return totalInjected, nil
+}
+
+// InjectLeadsFromList injects leads from list to queue system
+func (qm *QueueManager) InjectLeadsFromList(campaign db.Campaign, list db.List, listInjectCount int) (int, error) {
 	return 0, nil
 }
 

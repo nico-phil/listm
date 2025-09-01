@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"log"
 )
 
 // GetCampaigns retrive all campaign from the database
@@ -114,4 +115,38 @@ func GetActiveListByCampaign(ctx context.Context, campaignID string) ([]List, er
 	}
 
 	return lists, nil
+}
+
+func GetLeadsCount(ctx context.Context, worksapceID string) (map[string]int, error) {
+	if session == nil {
+		return nil, ErrNoConnection
+	}
+
+	query := `SELECT listnumber FROM list_data where workspace_id=? `
+	scanner := session.Query(query, worksapceID).Iter().Scanner()
+
+	var listnumbers []string
+	for scanner.Next() {
+		var listnumber string
+		err := scanner.Scan(&listnumber)
+		if err != nil {
+			log.Printf("error reading listnumber for workspace: %s", worksapceID)
+			return nil, fmt.Errorf("error reading listnumber for workspace: %s", worksapceID)
+		}
+
+		listnumbers = append(listnumbers, listnumber)
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Printf("error reading listnumber for workspace: %s", worksapceID)
+		return nil, fmt.Errorf("error reading listnumber for workspace: %s", worksapceID)
+
+	}
+
+	countMap := map[string]int{}
+	for _, listnumber := range listnumbers {
+		countMap[listnumber]++
+	}
+
+	return countMap, nil
 }
