@@ -11,7 +11,7 @@ func GetContactPoints() []string {
 		return []string{"cassandra-node1:9042"}
 	}
 
-	valueArray := strings.Split(valueStr, "")
+	valueArray := strings.Split(valueStr, " ")
 	return valueArray
 }
 
@@ -33,6 +33,6 @@ func GetRedisArr() string {
 	return addr
 }
 
-func GetRedisPasswrod() string {
-	return os.Getenv("REDIS_ADDR")
+func GetRedisPassword() string {
+	return os.Getenv("REDIS_PASSWORD")
 }

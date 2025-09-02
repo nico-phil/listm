@@ -38,7 +38,7 @@ func InitRedis() error {
 	addr := config.GetRedisArr()
 	rdb = redis.NewClient(&redis.Options{
 		Addr:     addr,
-		Password: config.GetRedisPasswrod(),
+		Password: config.GetRedisPassword(),
 		DB:       0,
 	})
 
@@ -171,7 +171,7 @@ func QueueLead(workspaceID string, lead QueuedLead) error {
 
 	jsonLead, err := json.Marshal(lead)
 	if err != nil {
-		fmt.Errorf("failed to marshal lead %v", err)
+		return fmt.Errorf("failed to marshal lead %v", err)
 	}
 	_, err = rdb.LPush(ctx, key, jsonLead).Result()
 	if err != nil {
