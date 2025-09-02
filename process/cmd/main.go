@@ -16,6 +16,6 @@ func main() {
 	// orchestrator := orchestrator.New()
 	// orchestrator.Start()
 
-	c, _ := db.GetListsByWorkspace("workspace-1")
+	c, _ := db.GetDialableLeads("workspace-1", "l3", 10)
 	fmt.Println(c)
 }
