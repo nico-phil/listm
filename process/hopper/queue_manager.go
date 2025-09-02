@@ -20,7 +20,7 @@ func NewQueueManager() *QueueManager {
 
 // ProcessAllWorkspacesWithContext process all worspaces
 func (qm *QueueManager) ProcessAllWorkspacesWithContext(ctx context.Context) error {
-	campaigns, err := db.GetCampaigns()
+	campaigns, err := db.GetAllCampaigns()
 	if err != nil {
 		log.Printf("failed to get campaign from db %v", err)
 		return err
@@ -111,7 +111,7 @@ func (qm *QueueManager) ProcessCampaignWithContext(ctx context.Context, campaign
 		return 0, nil
 	}
 
-	leadsCount, err := db.GetLeadsCount(ctx, campaign.WorkspaceID)
+	leadsCount, err := db.GetLeadsCount(campaign.WorkspaceID)
 	if err != nil {
 		log.Printf("error")
 	}

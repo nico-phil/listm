@@ -39,3 +39,10 @@ func NewClient() error {
 func Getsession() *gocql.Session {
 	return session
 }
+
+func CloseSession() {
+	if session != nil {
+		session.Close()
+		log.Println("Cassandra connection closed")
+	}
+}
