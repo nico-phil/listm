@@ -35,7 +35,7 @@ func (rc *RateController) CalculateInjectionRate(campaign db.Campaign) (*RateCal
 	// get current calls in progres for this workspace
 	currentCalls, err := redis.GetCallCount(campaign.WorkspaceID)
 	if err != nil {
-		log.Printf("failed to get current call count for workspace %s", campaign.WorkspaceID)
+		log.Printf("failed to get current call count for workspace %s: %v", campaign.WorkspaceID, err)
 		return nil, fmt.Errorf("failed to get current call count for workspace %s", campaign.WorkspaceID)
 	}
 
@@ -118,4 +118,26 @@ func (rc *RateController) CanInjectLeads(workspaceID string, maxRatePerMinute in
 		workspaceID, currentLoad, bufferCapacity, canInject, availableCapacity)
 
 	return canInject, availableCapacity, nil
+}
+
+// TrackCallStart tracks when a call starts (increment counter)
+func (rc *RateController) TrackCallStart(workspaceID string) error {
+	_, err := redis.IncrementCallCount(workspaceID)
+	if err != nil {
+		return fmt.Errorf("failed to track call start: %v", err)
+	}
+
+	log.Printf("[Campaign-aware posting service]: [%s]: Tracked call start for workspace %s", workspaceID, workspaceID)
+	return nil
+}
+
+// TrackCallEnd tracks when a call ends (decrement counter)
+func (rc *RateController) TrackCallEnd(workspaceID string) error {
+	_, err := redis.DecrementCallCount(workspaceID)
+	if err != nil {
+		return fmt.Errorf("failed to track call end: %v", err)
+	}
+
+	log.Printf("Tracked call end for workspace %s", workspaceID)
+	return nil
 }

@@ -98,6 +98,10 @@ func DecrementCallCount(workspaceID string) (int, error) {
 func GetCallCount(workspaceID string) (int, error) {
 	key := fmt.Sprintf("ws_%s_calls_in_progress", workspaceID)
 	countStr, err := rdb.Get(ctx, key).Result()
+	if err == redis.Nil {
+		return 0, nil // No calls count set
+	}
+
 	if err != nil {
 		return 0, fmt.Errorf("failed to retrieve call count: %v", err)
 	}
