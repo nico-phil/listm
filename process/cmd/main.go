@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/nico-phil/process/db"
+	"github.com/nico-phil/process/redis"
 )
 
 func main() {
@@ -13,9 +14,16 @@ func main() {
 		return
 	}
 
+	err = redis.InitRedis()
+	if err != nil {
+		return
+	}
+
 	// orchestrator := orchestrator.New()
 	// orchestrator.Start()
 
-	c, _ := db.GetDialableLeads("workspace-1", "l3", 10)
-	fmt.Println(c)
+	// , _ := db.GetAllCampaigns()
+
+	result, _ := redis.IncrementCallCount("workspace-1")
+	fmt.Println(result, result)
 }
