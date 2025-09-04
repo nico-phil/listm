@@ -7,15 +7,20 @@ import (
 	"time"
 
 	"github.com/nico-phil/process/db"
+	"github.com/nico-phil/process/ratelimit"
 )
 
 // QueueManager manages the hopper  queue system
 type QueueManager struct {
+	rateController *ratelimit.RateController
+	// timeZoneValidation
 }
 
 // NewQueueManager created a new queue manager
-func NewQueueManager() *QueueManager {
-	return &QueueManager{}
+func NewQueueManager(rateController *ratelimit.RateController) *QueueManager {
+	return &QueueManager{
+		rateController: rateController,
+	}
 }
 
 // ProcessAllWorkspacesWithContext process all worspaces
