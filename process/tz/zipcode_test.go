@@ -141,5 +141,35 @@ func TestGetLocalTimeAt(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected error for non-existent zip code 99999, got nil")
 	}
+}
+
+func TestLoadTimezoneWithFallback(t *testing.T) {
+
+	cases := []struct {
+		name             string
+		timeZone         string
+		expectedTimezone string
+	}{
+		{name: "default", timeZone: "", expectedTimezone: "UTC"},
+		{name: "America/New_York", timeZone: "America/New_York", expectedTimezone: "America/New_York"},
+		{name: "America/Chicago", timeZone: "America/Chicago", expectedTimezone: "America/Chicago"},
+		{name: "America/Denver", timeZone: "America/Denver", expectedTimezone: "America/Denver"},
+		{name: "America/Los_Angeles", timeZone: "America/Los_Angeles", expectedTimezone: "America/Los_Angeles"},
+		{name: "invalid/Timezone", timeZone: "invalid/Timezone", expectedTimezone: ""},
+	}
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			loc, err := LoadTimezoneWithFallback(c.timeZone)
+			if c.name == "invalid/Timezone" {
+				assert.NotNil(t, err)
+				assert.Nil(t, loc)
+			} else {
+				assert.Nil(t, err)
+				assert.Equal(t, c.expectedTimezone, loc.String())
+			}
+
+		})
+	}
 
 }
