@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TestNewZipcodeCache tests creation of NewZipcodeCache
 func TestNewZipcodeCache(t *testing.T) {
 	zipCodeCache := NewZipcodeCache()
 
@@ -47,6 +48,7 @@ func TestSetZipCode(t *testing.T) {
 	assert.False(t, ok)
 }
 
+// TestZipCodeCacheConcurrency tests inserting and accessing the cache concurrently
 func TestZipCodeCacheConcurrency(t *testing.T) {
 	cache := NewZipcodeCache()
 	var wg sync.WaitGroup
@@ -77,6 +79,7 @@ func TestZipCodeCacheConcurrency(t *testing.T) {
 	assert.Len(t, cache.cache, 100)
 }
 
+// TestGetLocalTimeAt tests localtime for a specific timezone
 func TestGetLocalTimeAt(t *testing.T) {
 
 	zipCodeCache := NewZipcodeCache()
@@ -143,6 +146,7 @@ func TestGetLocalTimeAt(t *testing.T) {
 	}
 }
 
+// TestLoadTimezoneWithFallback test timezones
 func TestLoadTimezoneWithFallback(t *testing.T) {
 
 	cases := []struct {
