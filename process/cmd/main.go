@@ -1,11 +1,8 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/nico-phil/process/db"
 	"github.com/nico-phil/process/redis"
-	"github.com/nico-phil/process/tz"
 )
 
 func main() {
@@ -28,5 +25,11 @@ func main() {
 	// result, _ := redis.IncrementCallCount("workspace-1")
 	// fmt.Println(result, result)
 
-	fmt.Println(tz.DownLoadZipData())
+	// const geoNamesZipURL = "http://download.geonames.org/export/zip/US.zip"
+
+	// const dataDir = "/data"
+
+	// const zipFilePath = dataDir + "/US.zip"
+
+	// fmt.Println(tz.DownLoadZipData(context.TODO(), http.Client{}, geoNamesZipURL, zipFilePath))
 }
