@@ -1,7 +1,10 @@
 package tz
 
 import (
+	"context"
 	"fmt"
+	"net/http"
+	"path/filepath"
 	"sync"
 	"testing"
 	"time"
@@ -178,16 +181,22 @@ func TestLoadTimezoneWithFallback(t *testing.T) {
 
 }
 
+// TestDownLoadZipData test downloadZipdata
 func TestDownLoadZipData(t *testing.T) {
 
-	// const geoNamesZipURL = "http://download.geonames.org/export/zip/US.zip"
+	const geoNamesZipURL = "http://download.geonames.org/export/zip/US.zip"
 
-	dataDir = "./process/data"
+	tmp := t.TempDir()
+	zipFilePath := filepath.Join(tmp, "/US.zip")
 
-	zipFilePath = dataDir + "/US.zip"
+	// csvFilePath = dataDir + "/US.txt"
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer cancel()
 
-	csvFilePath = dataDir + "/US.txt"
+	client := http.Client{}
+	err := DownLoadZipData(ctx, client, geoNamesZipURL, zipFilePath)
+	if err != nil {
+		t.Fatalf("DownloadZipdata() error: %v", err)
+	}
 
-	err := DownLoadZipData()
-	assert.Nil(t, err)
 }
