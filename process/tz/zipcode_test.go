@@ -181,6 +181,7 @@ func TestLoadTimezoneWithFallback(t *testing.T) {
 
 }
 
+// TestDownLoadZipData test downloadZipdata
 func TestDownLoadZipData(t *testing.T) {
 
 	const geoNamesZipURL = "http://download.geonames.org/export/zip/US.zip"
