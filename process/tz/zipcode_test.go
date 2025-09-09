@@ -177,3 +177,17 @@ func TestLoadTimezoneWithFallback(t *testing.T) {
 	}
 
 }
+
+func TestDownLoadZipData(t *testing.T) {
+
+	// const geoNamesZipURL = "http://download.geonames.org/export/zip/US.zip"
+
+	dataDir = "./process/data"
+
+	zipFilePath = dataDir + "/US.zip"
+
+	csvFilePath = dataDir + "/US.txt"
+
+	err := DownLoadZipData()
+	assert.Nil(t, err)
+}
