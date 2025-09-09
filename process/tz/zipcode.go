@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const (
+var (
 	// GeoNamesZipURL is the URL to download zip code data
 	geoNamesZipURL = "http://download.geonames.org/export/zip/US.zip"
 	// DataDir is the directory where we'll store the downloaded data
