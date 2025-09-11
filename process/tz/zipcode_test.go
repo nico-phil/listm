@@ -14,7 +14,7 @@ import (
 
 // TestNewZipcodeCache tests creation of NewZipcodeCache
 func TestNewZipcodeCache(t *testing.T) {
-	zipCodeCache := NewZipcodeCache()
+	zipCodeCache := NewZipCodeCache()
 
 	assert.NotNil(t, zipCodeCache)
 	assert.NotNil(t, zipCodeCache.cache)
@@ -23,10 +23,10 @@ func TestNewZipcodeCache(t *testing.T) {
 
 // TestSetZipCode tests the Set zipcode function
 func TestSetZipCode(t *testing.T) {
-	zipCodeCache := NewZipcodeCache()
+	zipCodeCache := NewZipCodeCache()
 
 	zipCodeInfo := ZipCodeInfo{
-		Zipcode:   "1234",
+		ZipCode:   "1234",
 		Latitude:  40.7128,
 		Longitude: -74.0060,
 		City:      "New York",
@@ -34,13 +34,13 @@ func TestSetZipCode(t *testing.T) {
 		TimeZone:  "America/New_York",
 	}
 
-	zipCodeCache.Set(zipCodeInfo.Zipcode, &zipCodeInfo)
+	zipCodeCache.Set(zipCodeInfo.ZipCode, &zipCodeInfo)
 
-	insertedZipCodeInfo, ok := zipCodeCache.cache[zipCodeInfo.Zipcode]
+	insertedZipCodeInfo, ok := zipCodeCache.cache[zipCodeInfo.ZipCode]
 
 	// verify the zipcode in found
 	assert.True(t, ok)
-	assert.Equal(t, zipCodeInfo.Zipcode, insertedZipCodeInfo.Zipcode)
+	assert.Equal(t, zipCodeInfo.ZipCode, insertedZipCodeInfo.ZipCode)
 	assert.Equal(t, zipCodeInfo.Latitude, insertedZipCodeInfo.Latitude)
 	assert.Equal(t, zipCodeInfo.Longitude, insertedZipCodeInfo.Longitude)
 	assert.Equal(t, zipCodeInfo.City, insertedZipCodeInfo.City)
@@ -53,7 +53,7 @@ func TestSetZipCode(t *testing.T) {
 
 // TestZipCodeCacheConcurrency tests inserting and accessing the cache concurrently
 func TestZipCodeCacheConcurrency(t *testing.T) {
-	cache := NewZipcodeCache()
+	cache := NewZipCodeCache()
 	var wg sync.WaitGroup
 
 	for i := 0; i < 100; i++ {
@@ -62,11 +62,11 @@ func TestZipCodeCacheConcurrency(t *testing.T) {
 		go func() {
 			defer wg.Done()
 			info := ZipCodeInfo{
-				Zipcode:  fmt.Sprintf("zip%d", i),
+				ZipCode:  fmt.Sprintf("zip%d", i),
 				TimeZone: "America/New_York",
 			}
 
-			cache.Set(info.Zipcode, &info)
+			cache.Set(info.ZipCode, &info)
 		}()
 
 		go func() {
@@ -85,11 +85,11 @@ func TestZipCodeCacheConcurrency(t *testing.T) {
 // TestGetLocalTimeAt tests localtime for a specific timezone
 func TestGetLocalTimeAt(t *testing.T) {
 
-	zipCodeCache := NewZipcodeCache()
+	zipCodeCache := NewZipCodeCache()
 
 	// Eastern time zone
 	info1 := ZipCodeInfo{
-		Zipcode:   "1234",
+		ZipCode:   "1234",
 		Latitude:  40.7128,
 		Longitude: -74.0060,
 		City:      "New York",
@@ -98,7 +98,7 @@ func TestGetLocalTimeAt(t *testing.T) {
 	}
 
 	info2 := ZipCodeInfo{
-		Zipcode:   "94016",
+		ZipCode:   "94016",
 		Latitude:  37.7749,
 		Longitude: -122.4194,
 		City:      "San Francisco",
@@ -106,17 +106,17 @@ func TestGetLocalTimeAt(t *testing.T) {
 		TimeZone:  "America/Los_Angeles",
 	}
 
-	zipCodeCache.Set(info1.Zipcode, &info1)
-	zipCodeCache.Set(info2.Zipcode, &info2)
+	zipCodeCache.Set(info1.ZipCode, &info1)
+	zipCodeCache.Set(info2.ZipCode, &info2)
 
 	now := time.Now()
 
-	_, err := GetLocalTimeAt(zipCodeCache, info1.Zipcode, now)
+	_, err := GetLocalTimeAt(zipCodeCache, info1.ZipCode, now)
 	if err != nil {
 		t.Fatalf("failed to get local time for zipcode 1234")
 	}
 
-	_, err = GetLocalTimeAt(zipCodeCache, info2.Zipcode, now)
+	_, err = GetLocalTimeAt(zipCodeCache, info2.ZipCode, now)
 	if err != nil {
 		t.Fatalf("failed to get local time 94016")
 	}
@@ -194,7 +194,7 @@ func TestDownLoadZipData_Sucess(t *testing.T) {
 	defer cancel()
 
 	client := http.Client{}
-	err := DownLoadZipData(ctx, client, geoNamesZipURL, zipFilePath)
+	err := downloadZipData(ctx, client, geoNamesZipURL, zipFilePath)
 	if err != nil {
 		t.Fatalf("DownloadZipdata() error: %v", err)
 	}
