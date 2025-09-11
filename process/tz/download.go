@@ -13,7 +13,7 @@ type HTTPDoer interface {
 }
 
 // DownLoadZipData downloads the zip code data GeoNames
-func DownLoadZipData(ctx context.Context, client http.Client, url, dst string) error {
+func downloadZipData(ctx context.Context, client http.Client, url, dst string) error {
 
 	// download the file
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)

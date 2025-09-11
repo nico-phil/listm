@@ -19,7 +19,7 @@ var (
 
 // ZipCode contains information about zipcode
 type ZipCodeInfo struct {
-	Zipcode   string
+	ZipCode   string
 	Latitude  float64
 	Longitude float64
 	State     string
@@ -34,7 +34,7 @@ type ZipCodeCache struct {
 }
 
 // NewZipcodeCache stores zipcode informations
-func NewZipcodeCache() *ZipCodeCache {
+func NewZipCodeCache() *ZipCodeCache {
 	return &ZipCodeCache{
 		cache: make(map[string]*ZipCodeInfo),
 	}

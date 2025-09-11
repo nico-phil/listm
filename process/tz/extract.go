@@ -3,6 +3,7 @@ package tz
 import (
 	"archive/zip"
 	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"log"
@@ -26,9 +27,10 @@ func LoadZipCodeData() (*ZipCodeCache, error) {
 		log.Println("Will attempt to use existing data if available")
 	}
 
+	client := http.Client{}
 	if shouldDownload {
 		log.Println("Downloading zip code data...")
-		if err := downloadZipData(); err != nil {
+		if err := downloadZipData(context.Background(), client, geoNamesZipURL, zipFilePath); err != nil {
 			return nil, fmt.Errorf("failed to download zip data: %v", err)
 		}
 
@@ -146,7 +148,7 @@ func loadZipCodeDataFromCSV() (*ZipCodeCache, error) {
 			TimeZone:  timeZone,
 		}
 
-		cache.set(zipCode, info)
+		cache.Set(zipCode, info)
 	}
 
 	if err := scanner.Err(); err != nil {
